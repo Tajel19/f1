@@ -281,9 +281,8 @@
       }
     }
 
-    // --- 2. PADDOCK WORDLE (РАСШИРЕННАЯ БАЗА ПИЛОТОВ F1) ---
+    // --- 2. PADDOCK WORDLE ---
     const drivers = [
-      // Современные пилоты
       { name: "Max Verstappen", nation: "🇳🇱 Нидерланды", team: "Red Bull", age: 28, wins: 63, debut: 2015 },
       { name: "Lewis Hamilton", nation: "🇬🇧 Великобритания", team: "Ferrari", age: 41, wins: 105, debut: 2007 },
       { name: "Charles Leclerc", nation: "🇲🇨 Монако", team: "Ferrari", age: 28, wins: 8, debut: 2018 },
@@ -304,8 +303,6 @@
       { name: "Liam Lawson", nation: "🇳🇿 Новая Зеландия", team: "RB", age: 24, wins: 0, debut: 2023 },
       { name: "Franco Colapinto", nation: "🇦🇷 Аргентина", team: "Williams", age: 22, wins: 0, debut: 2024 },
       { name: "Oliver Bearman", nation: "🇬🇧 Великобритания", team: "Haas", age: 20, wins: 0, debut: 2024 },
-
-      // Легенды и чемпионы прошлых лет
       { name: "Michael Schumacher", nation: "🇩🇪 Германия", team: "Ferrari", age: 57, wins: 91, debut: 1991 },
       { name: "Ayrton Senna", nation: "🇧🇷 Бразилия", team: "McLaren", age: 34, wins: 41, debut: 1984 },
       { name: "Alain Prost", nation: "🇫🇷 Франция", team: "McLaren", age: 71, wins: 51, debut: 1980 },
@@ -322,8 +319,6 @@
       { name: "Jacques Villeneuve", nation: "🇨🇦 Канада", team: "Williams", age: 54, wins: 11, debut: 1996 },
       { name: "Jenson Button", nation: "🇬🇧 Великобритания", team: "Brawn GP", age: 46, wins: 15, debut: 2000 },
       { name: "Nico Rosberg", nation: "🇩🇪 Германия", team: "Mercedes", age: 40, wins: 23, debut: 2006 },
-
-      // Известные гонщики прошлых лет
       { name: "Rubens Barrichello", nation: "🇧🇷 Бразилия", team: "Ferrari", age: 53, wins: 11, debut: 1993 },
       { name: "Felipe Massa", nation: "🇧🇷 Бразилия", team: "Ferrari", age: 44, wins: 11, debut: 2002 },
       { name: "David Coulthard", nation: "🇬🇧 Великобритания", team: "McLaren", age: 54, wins: 13, debut: 1994 },
@@ -335,30 +330,37 @@
       { name: "Gerhard Berger", nation: "🇦🇹 Австрия", team: "Ferrari", age: 66, wins: 10, debut: 1984 }
     ];
 
-    // Сортировка по алфавиту для удобного выбора
+    // Сначала сортируем список пилотов по имени
     drivers.sort((a, b) => a.name.localeCompare(b.name));
 
     let secretDriver = null;
 
+    // После сортировки наполняем списки выбора
     const select = document.getElementById('driver-select');
-    drivers.forEach((d, idx) => {
-      const opt = document.createElement('option');
-      opt.value = idx;
-      opt.innerText = d.name;
-      select.appendChild(opt);
-    });
+    function initDriverSelect() {
+      select.innerHTML = '<option value="" disabled selected>Выберите пилота...</option>';
+      drivers.forEach((d, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.innerText = d.name;
+        select.appendChild(opt);
+      });
+    }
+    initDriverSelect();
 
     function resetWordleGame() {
-      secretDriver = drivers[Math.floor(Math.random() * drivers.length)];
+      // Честный рандомный выбор пилота
+      const randomIndex = Math.floor(Math.random() * drivers.length);
+      secretDriver = drivers[randomIndex];
       document.getElementById('guesses-body').innerHTML = '';
       select.value = "";
     }
 
     function makeGuess() {
       const idx = select.value;
-      if (idx === "") return;
+      if (idx === "" || idx === null) return;
 
-      const guessed = drivers[idx];
+      const guessed = drivers[parseInt(idx, 10)];
       const tbody = document.getElementById('guesses-body');
       const tr = document.createElement('tr');
 
@@ -394,7 +396,7 @@
 
     resetWordleGame();
 
-    // --- 3. КВИЗ ИСКЛЮЧИТЕЛЬНО ПРО F1 ---
+    // --- 3. КВИЗ (СИСТЕМА БЕЗ ПОВТОРЕНИЙ) ---
     const f1QuizData = [
       { q: "Какой гонщик выигрывал 7 титулов Чемпиона мира F1 вместе с Михаэлем Шумахером?", a: ["Льюис Хэмилтон", "Макс Ферстаппен", "Шарль Леклер"], correct: 0 },
       { q: "Сколько красных огней загорается на стартовом светофоре F1?", a: ["3", "5", "10"], correct: 1 },
@@ -412,26 +414,35 @@
       { q: "Какой цвет имеют шины типа Soft (Мягкие)?", a: ["Желтый", "Красный", "Белый"], correct: 1 }
     ];
 
-    let currentQIndex = -1;
+    let quizDeck = [];
+    let currentQuizItem = null;
     let score = 0;
+
+    // Перемешивание массива колоды
+    function shuffleQuizDeck() {
+      quizDeck = [...f1QuizData];
+      for (let i = quizDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [quizDeck[i], quizDeck[j]] = [quizDeck[j], quizDeck[i]];
+      }
+    }
 
     function nextQuestion() {
       const statusMsg = document.getElementById('status-msg');
       statusMsg.innerText = '';
 
-      let randomIndex;
-      do {
-        randomIndex = Math.floor(Math.random() * f1QuizData.length);
-      } while (randomIndex === currentQIndex && f1QuizData.length > 1);
+      // Если вопросы в колоде закончились — перемешиваем заново
+      if (quizDeck.length === 0) {
+        shuffleQuizDeck();
+      }
 
-      currentQIndex = randomIndex;
-      const qData = f1QuizData[currentQIndex];
+      currentQuizItem = quizDeck.pop();
 
-      document.getElementById('quiz-question').innerText = qData.q;
+      document.getElementById('quiz-question').innerText = currentQuizItem.q;
       const optsContainer = document.getElementById('quiz-options');
       optsContainer.innerHTML = '';
 
-      qData.a.forEach((opt, idx) => {
+      currentQuizItem.a.forEach((opt, idx) => {
         const btn = document.createElement('button');
         btn.className = 'quiz-option';
         btn.innerText = opt;
@@ -442,15 +453,14 @@
 
     function answerF1Quiz(selectedIdx) {
       const statusMsg = document.getElementById('status-msg');
-      const qData = f1QuizData[currentQIndex];
 
-      if (selectedIdx === qData.correct) {
+      if (selectedIdx === currentQuizItem.correct) {
         score += 100;
         statusMsg.style.color = '#00ff88';
         statusMsg.innerText = '✅ Правильно! +100 очков';
       } else {
         statusMsg.style.color = '#ff4444';
-        statusMsg.innerText = `❌ Неверно! Правильно: ${qData.a[qData.correct]}`;
+        statusMsg.innerText = `❌ Неверно! Правильно: ${currentQuizItem.a[currentQuizItem.correct]}`;
       }
 
       document.getElementById('quiz-score').innerText = `Очки: ${score}`;
@@ -460,6 +470,7 @@
       }, 1200);
     }
 
+    shuffleQuizDeck();
     nextQuestion();
   </script>
 </body>
