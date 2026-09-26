@@ -183,7 +183,7 @@
     <!-- ВКЛАДКА 2: PADDOCK (WORDLE) -->
     <div id="tab-paddock" class="tab-content">
       <h2>🏎️ Угадай гонщика</h2>
-      <p style="font-size:13px; color:#aaa;">Случайный пилот загадан! Угадайте его:</p>
+      <p style="font-size:13px; color:#aaa;">Загадан один из гонщиков F1 разных эпох! Угадайте его:</p>
       
       <select id="driver-select" class="select-driver">
         <option value="" disabled selected>Выберите пилота...</option>
@@ -281,8 +281,9 @@
       }
     }
 
-    // --- 2. PADDOCK WORDLE ---
+    // --- 2. PADDOCK WORDLE (РАСШИРЕННАЯ БАЗА ПИЛОТОВ F1) ---
     const drivers = [
+      // Современные пилоты
       { name: "Max Verstappen", nation: "🇳🇱 Нидерланды", team: "Red Bull", age: 28, wins: 63, debut: 2015 },
       { name: "Lewis Hamilton", nation: "🇬🇧 Великобритания", team: "Ferrari", age: 41, wins: 105, debut: 2007 },
       { name: "Charles Leclerc", nation: "🇲🇨 Монако", team: "Ferrari", age: 28, wins: 8, debut: 2018 },
@@ -291,14 +292,51 @@
       { name: "George Russell", nation: "🇬🇧 Великобритания", team: "Mercedes", age: 28, wins: 3, debut: 2019 },
       { name: "Oscar Piastri", nation: "🇦🇺 Австралия", team: "McLaren", age: 24, wins: 2, debut: 2023 },
       { name: "Carlos Sainz", nation: "🇪🇸 Испания", team: "Williams", age: 31, wins: 4, debut: 2015 },
-      { name: "Michael Schumacher", nation: "🇩🇪 Германия", team: "Ferrari", age: 57, wins: 91, debut: 1991 },
-      { name: "Ayrton Senna", nation: "🇧🇷 Бразилия", team: "McLaren", age: 34, wins: 41, debut: 1984 },
-      { name: "Sebastian Vettel", nation: "🇩🇪 Германия", team: "Red Bull", age: 38, wins: 53, debut: 2007 },
-      { name: "Kimi Raikkonen", nation: "🇫🇮 Финляндия", team: "Ferrari", age: 46, wins: 21, debut: 2001 },
       { name: "Pierre Gasly", nation: "🇫🇷 Франция", team: "Alpine", age: 30, wins: 1, debut: 2017 },
       { name: "Esteban Ocon", nation: "🇫🇷 Франция", team: "Haas", age: 29, wins: 1, debut: 2016 },
-      { name: "Nico Hulkenberg", nation: "🇩🇪 Германия", team: "Sauber", age: 38, wins: 0, debut: 2010 }
+      { name: "Nico Hulkenberg", nation: "🇩🇪 Германия", team: "Sauber", age: 38, wins: 0, debut: 2010 },
+      { name: "Valtteri Bottas", nation: "🇫🇮 Финляндия", team: "Sauber", age: 36, wins: 10, debut: 2013 },
+      { name: "Daniel Ricciardo", nation: "🇦🇺 Австралия", team: "RB", age: 36, wins: 8, debut: 2011 },
+      { name: "Yuki Tsunoda", nation: "🇯🇵 Япония", team: "RB", age: 25, wins: 0, debut: 2021 },
+      { name: "Alexander Albon", nation: "🇹🇭 Таиланд", team: "Williams", age: 29, wins: 0, debut: 2019 },
+      { name: "Lance Stroll", nation: "🇨🇦 Канада", team: "Aston Martin", age: 27, wins: 0, debut: 2017 },
+      { name: "Kevin Magnussen", nation: "🇩🇰 Дания", team: "Haas", age: 33, wins: 0, debut: 2014 },
+      { name: "Liam Lawson", nation: "🇳🇿 Новая Зеландия", team: "RB", age: 24, wins: 0, debut: 2023 },
+      { name: "Franco Colapinto", nation: "🇦🇷 Аргентина", team: "Williams", age: 22, wins: 0, debut: 2024 },
+      { name: "Oliver Bearman", nation: "🇬🇧 Великобритания", team: "Haas", age: 20, wins: 0, debut: 2024 },
+
+      // Легенды и чемпионы прошлых лет
+      { name: "Michael Schumacher", nation: "🇩🇪 Германия", team: "Ferrari", age: 57, wins: 91, debut: 1991 },
+      { name: "Ayrton Senna", nation: "🇧🇷 Бразилия", team: "McLaren", age: 34, wins: 41, debut: 1984 },
+      { name: "Alain Prost", nation: "🇫🇷 Франция", team: "McLaren", age: 71, wins: 51, debut: 1980 },
+      { name: "Sebastian Vettel", nation: "🇩🇪 Германия", team: "Red Bull", age: 38, wins: 53, debut: 2007 },
+      { name: "Kimi Raikkonen", nation: "🇫🇮 Финляндия", team: "Ferrari", age: 46, wins: 21, debut: 2001 },
+      { name: "Niki Lauda", nation: "🇦🇹 Австрия", team: "Ferrari", age: 70, wins: 25, debut: 1971 },
+      { name: "Juan Manuel Fangio", nation: "🇦🇷 Аргентина", team: "Mercedes", age: 84, wins: 24, debut: 1950 },
+      { name: "Jim Clark", nation: "🇬🇧 Великобритания", team: "Lotus", age: 32, wins: 25, debut: 1960 },
+      { name: "Jackie Stewart", nation: "🇬🇧 Великобритания", team: "Tyrrell", age: 86, wins: 27, debut: 1965 },
+      { name: "Nigel Mansell", nation: "🇬🇧 Великобритания", team: "Williams", age: 72, wins: 31, debut: 1980 },
+      { name: "Nelson Piquet", nation: "🇧🇷 Бразилия", team: "Brabham", age: 73, wins: 23, debut: 1978 },
+      { name: "Mika Hakkinen", nation: "🇫🇮 Финляндия", team: "McLaren", age: 57, wins: 20, debut: 1991 },
+      { name: "Damon Hill", nation: "🇬🇧 Великобритания", team: "Williams", age: 65, wins: 22, debut: 1992 },
+      { name: "Jacques Villeneuve", nation: "🇨🇦 Канада", team: "Williams", age: 54, wins: 11, debut: 1996 },
+      { name: "Jenson Button", nation: "🇬🇧 Великобритания", team: "Brawn GP", age: 46, wins: 15, debut: 2000 },
+      { name: "Nico Rosberg", nation: "🇩🇪 Германия", team: "Mercedes", age: 40, wins: 23, debut: 2006 },
+
+      // Известные гонщики прошлых лет
+      { name: "Rubens Barrichello", nation: "🇧🇷 Бразилия", team: "Ferrari", age: 53, wins: 11, debut: 1993 },
+      { name: "Felipe Massa", nation: "🇧🇷 Бразилия", team: "Ferrari", age: 44, wins: 11, debut: 2002 },
+      { name: "David Coulthard", nation: "🇬🇧 Великобритания", team: "McLaren", age: 54, wins: 13, debut: 1994 },
+      { name: "Mark Webber", nation: "🇦🇺 Австралия", team: "Red Bull", age: 49, wins: 9, debut: 2002 },
+      { name: "Giancarlo Fisichella", nation: "🇮🇹 Италия", team: "Renault", age: 53, wins: 3, debut: 1996 },
+      { name: "Juan Pablo Montoya", nation: "🇨🇴 Колумбия", team: "Williams", age: 50, wins: 7, debut: 2001 },
+      { name: "Daniil Kvyat", nation: "🇷🇺 Россия", team: "Red Bull", age: 31, wins: 0, debut: 2014 },
+      { name: "Jean Alesi", nation: "🇫🇷 Франция", team: "Ferrari", age: 61, wins: 1, debut: 1989 },
+      { name: "Gerhard Berger", nation: "🇦🇹 Австрия", team: "Ferrari", age: 66, wins: 10, debut: 1984 }
     ];
+
+    // Сортировка по алфавиту для удобного выбора
+    drivers.sort((a, b) => a.name.localeCompare(b.name));
 
     let secretDriver = null;
 
@@ -336,8 +374,10 @@
         return `<td class="${cls}">${valGuessed}${arrow}</td>`;
       };
 
+      const surname = guessed.name.split(' ').slice(-1)[0];
+
       tr.innerHTML = `
-        <td style="background:#222; color:#fff;">${guessed.name.split(' ')[1]}</td>
+        <td style="background:#222; color:#fff;">${surname}</td>
         ${getCell(guessed.nation, secretDriver.nation)}
         ${getCell(guessed.team, secretDriver.team)}
         ${getCell(guessed.age, secretDriver.age, true)}
@@ -363,7 +403,7 @@
       { q: "Какая команда Formula 1 известна под прозвищем «Скудерия»?", a: ["Mercedes", "Ferrari", "Red Bull"], correct: 1 },
       { q: "Какой пилот стал самым молодым чемпионом мира в истории F1?", a: ["Макс Ферстаппен", "Себастьян Феттель", "Льюис Хэмилтон"], correct: 1 },
       { q: "Сколько колес разрешено менять на пит-стопе во время гонки?", a: ["2", "4", "Сколько угодно"], correct: 1 },
-      { q: "В какому году Айртон Сенна выиграл свой первый титул F1?", a: ["1988", "1991", "1985"], correct: 0 },
+      { q: "В каком году Айртон Сенна выиграл свой первый титул F1?", a: ["1988", "1991", "1985"], correct: 0 },
       { q: "Как называется система снижения лобового сопротивления для обгона?", a: ["KERS", "DRS", "HALO"], correct: 1 },
       { q: "Как называется защитная дуга над кабиной пилота F1?", a: ["HALO", "DRS", "Monocoque"], correct: 0 },
       { q: "Какая команда выиграла Кубок Конструкторов 2023 года?", a: ["Ferrari", "Red Bull Racing", "McLaren"], correct: 1 },
@@ -379,7 +419,6 @@
       const statusMsg = document.getElementById('status-msg');
       statusMsg.innerText = '';
 
-      // Выбираем случайный вопрос
       let randomIndex;
       do {
         randomIndex = Math.floor(Math.random() * f1QuizData.length);
